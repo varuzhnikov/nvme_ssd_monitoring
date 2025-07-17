@@ -1,0 +1,63 @@
+groups:
+  - name: smartctl_nvme_alerts
+    rules:
+
+      # Alert if NVMe wear level exceeds 80% (used lifespan)
+      - alert: NVMEWearLevelHigh
+        expr: smartctl_device_percentage_used >= 80
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High NVMe wear level on {{ $labels.device }} ({{ $value }}%)"
+          description: "The drive {{ $labels.device }} has reached {{ $value }}% of its designed write endurance. Plan replacement soon."
+
+      # Alert if current temperature exceeds safe limits (> 80°C)
+      - alert: NVMEHighTemperature
+        expr: smartctl_device_temperature{temperature_type="current"} > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High temperature on NVMe {{ $labels.device }} ({{ $value }}°C)"
+          description: "The current temperature of {{ $labels.device }} exceeds the safe threshold (80°C). Check airflow and cooling."
+
+      # Alert on SMART critical warning bit (e.g. power loss, overheating, etc.)
+      - alert: NVMECriticalWarning
+        expr: smartctl_device_critical_warning != 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "SMART critical warning for {{ $labels.device }}"
+          description: "SMART reported a critical warning on device {{ $labels.device }}. Immediate attention required."
+
+      # Alert on media errors (e.g. read/write failures)
+      - alert: NVMEMediaErrors
+        expr: smartctl_device_media_errors > 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Media errors detected on {{ $labels.device }}"
+          description: "Media-level errors have been reported on {{ $labels.device }}. This may indicate degraded flash cells."
+
+      # Alert if SMART overall status is failed (should be 1 if OK)
+      - alert: NVMESmartStatusFailed
+        expr: smartctl_device_smart_status != 1
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "SMART health check failed on {{ $labels.device }}"
+          description: "The SMART status of {{ $labels.device }} indicates a failure. Consider immediate replacement."
+
+      # Alert if available spare blocks drop below threshold
+      - alert: NVMESpareBlocksLow
+        expr: smartctl_device_available_spare < smartctl_device_available_spare_threshold
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Available spare blocks low on {{ $labels.device }}"
+          description: "Spare capacity on {{ $labels.device }} dropped below the critical threshold. Replace the drive soon."

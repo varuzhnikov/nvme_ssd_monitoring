@@ -1,0 +1,8 @@
+- job_name: 'smartctl'
+  static_configs:
+  - targets: ['your_ip_is_here:9633']
+  relabel_configs:
+  - source_labels: [__address__]
+    regex: '.*'
+    target_label: instance
+    replacement: 'smartctl'
