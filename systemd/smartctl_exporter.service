@@ -1,0 +1,16 @@
+[Unit]
+Description=smartctl_exporter for Prometheus
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/smartctl_exporter \
+  --smartctl.path=/usr/sbin/smartctl \
+  --smartctl.device=/dev/nvme0n1 \
+  --smartctl.device=/dev/nvme1n1 \
+  --web.listen-address=:9633
+Restart=on-failure
+User=root
+
+[Install]
+WantedBy=multi-user.target
