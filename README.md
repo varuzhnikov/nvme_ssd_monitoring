@@ -29,9 +29,8 @@ This repository helps you:
 | Folder       | Contents                                                |
 |--------------|---------------------------------------------------------|
 | `grafana/`   | Grafana dashboard JSON with all SSD panels              |
-| `prometheus/`| Prometheus alert rules (`smartctl_alerts.yml`)         |
+| `prometheus/`| Prometheus alert rules (`smartctl_alerts.yaml`)         |
 | `systemd/`   | Ready-to-use `smartctl_exporter` systemd unit file      |
-| `exporter/`  | Build instructions for `smartctl_exporter` from source |
 
 ---
 
